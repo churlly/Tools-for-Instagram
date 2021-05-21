@@ -25,7 +25,7 @@ function saveCookies(inputLogin, cookies, state) {
     }
 	//console.log(cookies);
     //console.log(state);
-    var cookiepath = "cookies/" + (filename).toLowerCase() + ".json";
+    var cookiepath = "cookies/" + String((filename)).toLowerCase() + ".json";
     if(!fs.existsSync("cookies/")) {
         fs.mkdirSync("cookies/");
     }
@@ -53,7 +53,7 @@ async function loadCookies(inputLogin, silentMode = false) {
     } else {
         filename = inputLogin;
     }
-    var cookiepath = "cookies/" + (filename).toLowerCase() + ".json";
+    var cookiepath = "cookies/" + String((filename)).toLowerCase() + ".json";
     //console.log("Trying to load filepath " + cookiepath);
     //console.log(__dirname);
     if (fs.existsSync(cookiepath)) {
@@ -136,18 +136,19 @@ async function login(args={}) {
 
     if(process.env.IG_PROXY && inputProxy != false) {
         if(!silentMode)
-            console.log("Using proxy".green);
+            console.log("Using proxy");
+    
     } else {
         if(!silentMode) {
-            console.log("Not using proxy".yellow);
-            console.log("Mobile/Residential proxy recommended".yellow);
+            console.log("Not using proxy");
+            console.log("Mobile/Residential proxy recommended");
         }
     }
     //If proxy is set to false, avoid override using ENV proxy
     if(inputProxy != false)
         ig.state.proxyUrl = process.env.IG_PROXY;
     if(!silentMode)
-        console.log("Trying to log with ".cyan + process.env.IG_USERNAME.green);
+        console.log("Trying to log with ".cyan + process.env.IG_USERNAME);
     //First we check if the user have cookies
     let hasCookies = await loadCookies(inputLogin ,mode = silentMode);
     
@@ -208,7 +209,7 @@ async function login(args={}) {
     //Go online if online mode is set to true
     //ONLINE_MODE is a string on the env, otherwise if we change the status inside code it is a boolean
     if(process.env.ONLINE_MODE == true || process.env.ONLINE_MODE == "true") {
-        console.log("Online Mode".green);
+        console.log("Online Mode");
         //Connect to realtime nottifications
         await result.realtime.connect({
             graphQlSubs: [
@@ -231,7 +232,7 @@ async function login(args={}) {
             irisData: await ig.feed.directInbox().request(),
         });
     } else {
-        console.log("Online Mode disabled".green);
+        console.log("Online Mode disabled");
     }
     
     return clone(result);
@@ -248,7 +249,7 @@ async function tryToLogin(inputLogin, inputPassword, inputProxy, verificationMod
         if(!hasCookies) {
             if(!silentMode)
                 console.log("User not logged in, login in");
-        let loggedInUser = await ig.account.login(process.env.IG_USERNAME, process.env.IG_PASSWORD);
+        let loggedInUser = await ig.account.login(process.env.IG_USERNAME,process.env.IG_PASSWORD);
 
         if(!silentMode) {
             console.log("Logged")
@@ -265,7 +266,7 @@ async function tryToLogin(inputLogin, inputPassword, inputProxy, verificationMod
             ig.loggedInUser = await ig.account.currentUser();
             
             if(!silentMode)
-                console.log("Logged in".green);
+                console.log("Logged in");
         } catch (e) {
             console.log(e);
             //console.log(Object.getOwnPropertyNames ( e ));
@@ -296,7 +297,7 @@ async function tryToLogin(inputLogin, inputPassword, inputProxy, verificationMod
         ig.loggedInUser.verificationMode = verificationMode;
 
         //Open DB
-        const adapter = new FileSync("./db/"+(process.env.IG_USERNAME).toLowerCase()+".json");
+        const adapter = new FileSync("./db/"+String((process.env.IG_USERNAME)).toLowerCase()+".json");
         const db = low(adapter);
         db.defaults({likes: [], comments:[], mediaUploaded: [], follows: [], lastFollowers: []}).write()
         ig.shortid = shortid;
